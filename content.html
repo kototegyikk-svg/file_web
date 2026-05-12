@@ -75,46 +75,45 @@
 </div>
 
 <script>
-// Encryptor Logic (Base64 + Simple Shift)
-function encrypt() {
-    let text = document.getElementById('cryptoText').value;
-    if(!text) return;
-    let encrypted = btoa(text); // Base64 Encoding
-    document.getElementById('cryptoResult').innerText = "ENCRYPTED: " + encrypted;
-}
-
-function decrypt() {
-    let text = document.getElementById('cryptoText').value;
-    if(!text) return;
-    try {
-        let decrypted = atob(text); // Base64 Decoding
-        document.getElementById('cryptoResult').innerText = "DECRYPTED: " + decrypted;
-    } catch(e) {
-        alert("မှားယွင်းနေပါသည်။ Base64 ကုဒ်ဖြစ်ရပါမည်။");
-    }
-}
-
-// File Upload Logic (Using Catbox.moe API - No Account Needed)
 async function uploadFile() {
-    const file = document.getElementById('fileInput').files[0];
-    if(!file) { alert("ဖိုင်ရွေးပါ"); return; }
-    
-    document.getElementById('fileResult').innerText = "UPLOADING...";
-    
+    const fileInput = document.getElementById('fileInput');
+    const fileResult = document.getElementById('fileResult');
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert("ကျေးဇူးပြု၍ ဖိုင်အရင်ရွေးပါ!");
+        return;
+    }
+
+    fileResult.innerText = "UPLOADING TO SECURE SERVER...";
+    fileResult.style.color = "#ffff00"; // အဝါရောင် (တင်နေတုန်း)
+
     let formData = new FormData();
-    formData.append('reqtype', 'fileupload');
-    formData.append('fileToUpload', file);
+    formData.append('file', file);
 
     try {
-        // အခမဲ့ ဖိုင်တင်လို့ရတဲ့ API တစ်ခုကို သုံးထားပါတယ်
-        const response = await fetch('https://catbox.moe/user/api.php', {
+        // file.io API ကို သုံးထားပါတယ် (ဒါက ပိုပြီး အဆင်ပြေပါတယ်)
+        const response = await fetch('https://file.io', {
             method: 'POST',
             body: formData
         });
-        const link = await response.text();
-        document.getElementById('fileResult').innerHTML = `LINK: <a href="${link}" target="_blank">${link}</a>`;
+
+        const result = await response.json();
+
+        if (result.success) {
+            fileResult.innerHTML = `
+                <span style="color: #0f0;">UPLOAD SUCCESS!</span><br>
+                LINK: <a href="${result.link}" target="_blank" style="color: #0f0; text-decoration: underline;">${result.link}</a><br>
+                <small>(မှတ်ချက် - ဒီဖိုင်က တစ်ခါဒေါင်းပြီးရင် အလိုအလျောက် ပျက်သွားပါလိမ့်မယ်)</small>
+            `;
+        } else {
+            fileResult.innerText = "UPLOAD FAILED: " + result.message;
+            fileResult.style.color = "#ff0000";
+        }
     } catch (error) {
-        document.getElementById('fileResult').innerText = "UPLOAD FAILED!";
+        console.error(error);
+        fileResult.innerText = "SERVER ERROR! PLEASE TRY AGAIN.";
+        fileResult.style.color = "#ff0000";
     }
 }
 </script>
