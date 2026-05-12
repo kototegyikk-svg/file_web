@@ -1,146 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE WHITE HAT - UTILITY HUB</title>
+    <title>THE WHITE HAT - HUB</title>
     <style>
-        body {
-            background-color: #000;
-            color: #00ff00;
-            font-family: 'Courier New', monospace;
-            margin: 0;
-            overflow-x: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        #matrix-canvas {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: -1;
-            opacity: 0.3;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 600px;
-            z-index: 1;
-            text-align: center;
-        }
-
-        .tool-card {
-            background: rgba(0, 20, 0, 0.85);
-            border: 1px solid #00ff00;
-            padding: 25px;
-            margin: 20px 0;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
-        }
-
-        h1 { font-size: 2rem; letter-spacing: 5px; text-shadow: 0 0 10px #0f0; }
-        h3 { border-bottom: 1px solid #0f0; padding-bottom: 10px; }
-
-        textarea {
-            width: 100%; height: 80px;
-            background: #000; color: #0f0;
-            border: 1px solid #0f0; padding: 10px;
-            box-sizing: border-box; font-family: 'Courier New', monospace;
-        }
-
-        button {
-            background: #0f0; color: #000;
-            border: none; padding: 10px 20px;
-            cursor: pointer; font-weight: bold;
-            margin-top: 10px; transition: 0.3s;
-        }
-
-        button:hover { background: #000; color: #0f0; box-shadow: 0 0 10px #0f0; }
-
-        .result {
-            margin-top: 15px; text-align: left;
-            font-size: 0.9rem; word-break: break-all;
-            min-height: 20px;
-        }
+        body { background: #000; color: #0f0; font-family: monospace; text-align: center; }
+        .tool-card { border: 1px solid #0f0; margin: 20px auto; padding: 20px; max-width: 500px; background: rgba(0,20,0,0.8); }
+        button { background: #0f0; color: #000; border: none; padding: 10px; cursor: pointer; font-weight: bold; }
+        textarea { width: 90%; background: #000; color: #0f0; border: 1px solid #0f0; }
+        .result { margin-top: 10px; color: #fff; }
     </style>
 </head>
 <body>
+    <h1>[ UTILITY HUB ]</h1>
+    
+    <div class="tool-card">
+        <h3>SECRET MESSENGER</h3>
+        <textarea id="cryptoText"></textarea><br><br>
+        <button onclick="encrypt()">ENCRYPT</button>
+        <button onclick="decrypt()">DECRYPT</button>
+        <div id="cryptoResult" class="result"></div>
+    </div>
 
-    <canvas id="matrix-canvas"></canvas>
-
-    <div class="container">
-        <h1>[ UTILITY HUB ]</h1>
-
-        <!-- Tool 1: Messenger -->
-        <div class="tool-card">
-            <h3>SECRET MESSENGER</h3>
-            <textarea id="cryptoText" placeholder="စာသားရိုက်ပါ..."></textarea><br>
-            <button onclick="encrypt()">ENCRYPT</button>
-            <button onclick="decrypt()">DECRYPT</button>
-            <div id="cryptoResult" class="result"></div>
-        </div>
-
-        <!-- Tool 2: Scanner -->
-        <div class="tool-card">
-            <h3>SYSTEM SCANNER</h3>
-            <p>သင့်ရဲ့ Network နဲ့ System ကို စစ်ဆေးရန်</p>
-            <button onclick="scanSystem()">RUN DIAGNOSTICS</button>
-            <div id="scanResult" class="result"></div>
-        </div>
+    <div class="tool-card">
+        <h3>SYSTEM SCANNER</h3>
+        <button onclick="scanSystem()">RUN SCAN</button>
+        <div id="scanResult" class="result"></div>
     </div>
 
     <script>
-        // Matrix Rain Animation
-        const canvas = document.getElementById('matrix-canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()*&^%";
-        const fontSize = 16;
-        const columns = canvas.width / fontSize;
-        const drops = Array(Math.floor(columns)).fill(1);
-
-        function drawMatrix() {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#0f0";
-            ctx.font = fontSize + "px monospace";
-            for (let i = 0; i < drops.length; i++) {
-                const text = letters.charAt(Math.floor(Math.random() * letters.length));
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-                drops[i]++;
-            }
-        }
-        setInterval(drawMatrix, 33);
-
-        // Logic Functions
         function encrypt() {
-            const val = document.getElementById('cryptoText').value;
-            document.getElementById('cryptoResult').innerText = val ? "[+] ENC: " + btoa(val) : "စာရိုက်ပါ";
+            let t = document.getElementById('cryptoText').value;
+            document.getElementById('cryptoResult').innerText = btoa(t);
         }
-
         function decrypt() {
-            const val = document.getElementById('cryptoText').value;
-            try { document.getElementById('cryptoResult').innerText = val ? "[+] DEC: " + atob(val) : "စာရိုက်ပါ"; }
-            catch(e) { document.getElementById('cryptoResult').innerText = "[-] Error: Invalid Base64"; }
+            let t = document.getElementById('cryptoText').value;
+            try { document.getElementById('cryptoResult').innerText = atob(t); }
+            catch(e) { alert("Error!"); }
         }
-
         async function scanSystem() {
-            const res = document.getElementById('scanResult');
-            res.innerHTML = "> Accessing Core...<br>";
-            const logs = ["> Bypassing Proxy...", "> Identifying Host...", "> Extraction Complete."];
-            for(let log of logs) {
-                await new Promise(r => setTimeout(r, 600));
-                res.innerHTML += log + "<br>";
-            }
-            const ipFetch = await fetch('https://api.ipify.org?format=json');
-            const ipData = await ipFetch.json();
-            res.innerHTML += `<br><span style="color:#fff">Target_IP: ${ipData.ip}</span><br>`;
-            res.innerHTML += `Platform: ${navigator.platform}<br>Agent: ${navigator.userAgent.split(' ')[0]}`;
+            let r = document.getElementById('scanResult');
+            r.innerText = "Scanning...";
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                r.innerHTML = "IP: " + data.ip + "<br>OS: " + navigator.platform;
+            } catch(e) { r.innerText = "Scan Failed!"; }
         }
-    </style>
+    </script>
 </body>
 </html>
