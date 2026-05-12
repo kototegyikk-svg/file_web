@@ -1,0 +1,120 @@
+<style>
+    body {
+        background-color: #000;
+        color: #0f0;
+        font-family: 'Courier New', monospace;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+    }
+    .container {
+        text-align: center;
+        width: 90%;
+        max-width: 600px;
+    }
+    .tool-card {
+        background: rgba(0, 20, 0, 0.8);
+        border: 1px solid #0f0;
+        padding: 20px;
+        margin: 20px 0;
+        box-shadow: 0 0 15px #0f0;
+    }
+    textarea {
+        width: 100%;
+        height: 80px;
+        background: #000;
+        color: #0f0;
+        border: 1px solid #0f0;
+        padding: 10px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+    }
+    button {
+        background: #0f0;
+        color: #000;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    button:hover {
+        background: #008800;
+        color: #fff;
+    }
+    .result {
+        margin-top: 15px;
+        padding: 10px;
+        border-top: 1px dashed #0f0;
+        word-break: break-all;
+    }
+</style>
+<div class="container">
+    <h1 class="glitch" data-text="UTILITY HUB">UTILITY HUB</h1>
+
+    <!-- ၁။ Encryptor/Decryptor Section -->
+    <div class="tool-card">
+        <h3>[ SECRET MESSENGER ]</h3>
+        <textarea id="cryptoText" placeholder="ပြောချင်တဲ့စာသားရိုက်ထည့်ပါ..."></textarea>
+        <div class="buttons">
+            <button onclick="encrypt()">ENCRYPT</button>
+            <button onclick="decrypt()">DECRYPT</button>
+        </div>
+        <div id="cryptoResult" class="result"></div>
+    </div>
+
+    <!-- ၂။ Anonymous File Sharer Section -->
+    <div class="tool-card">
+        <h3>[ ANONYMOUS UPLOADER ]</h3>
+        <input type="file" id="fileInput">
+        <button onclick="uploadFile()">UPLOAD TO CLOUD</button>
+        <div id="fileResult" class="result"></div>
+    </div>
+</div>
+
+<script>
+// Encryptor Logic (Base64 + Simple Shift)
+function encrypt() {
+    let text = document.getElementById('cryptoText').value;
+    if(!text) return;
+    let encrypted = btoa(text); // Base64 Encoding
+    document.getElementById('cryptoResult').innerText = "ENCRYPTED: " + encrypted;
+}
+
+function decrypt() {
+    let text = document.getElementById('cryptoText').value;
+    if(!text) return;
+    try {
+        let decrypted = atob(text); // Base64 Decoding
+        document.getElementById('cryptoResult').innerText = "DECRYPTED: " + decrypted;
+    } catch(e) {
+        alert("မှားယွင်းနေပါသည်။ Base64 ကုဒ်ဖြစ်ရပါမည်။");
+    }
+}
+
+// File Upload Logic (Using Catbox.moe API - No Account Needed)
+async function uploadFile() {
+    const file = document.getElementById('fileInput').files[0];
+    if(!file) { alert("ဖိုင်ရွေးပါ"); return; }
+    
+    document.getElementById('fileResult').innerText = "UPLOADING...";
+    
+    let formData = new FormData();
+    formData.append('reqtype', 'fileupload');
+    formData.append('fileToUpload', file);
+
+    try {
+        // အခမဲ့ ဖိုင်တင်လို့ရတဲ့ API တစ်ခုကို သုံးထားပါတယ်
+        const response = await fetch('https://catbox.moe/user/api.php', {
+            method: 'POST',
+            body: formData
+        });
+        const link = await response.text();
+        document.getElementById('fileResult').innerHTML = `LINK: <a href="${link}" target="_blank">${link}</a>`;
+    } catch (error) {
+        document.getElementById('fileResult').innerText = "UPLOAD FAILED!";
+    }
+}
+</script>
